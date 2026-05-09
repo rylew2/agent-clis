@@ -34,6 +34,7 @@ semgrepx --help
 redditx --help
 corosx --help
 browserx --help
+tokensx --help
 ytx transcript YHk45NEpspE --no-header
 ```
 

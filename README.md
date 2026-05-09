@@ -13,6 +13,7 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 | `redditx` | working, public Reddit JSON | Reddit search/thread reader with cached raw data. |
 | `corosx` | working, requires local COROS cache | COROS cache/reporting CLI. |
 | `browserx` | partial | Link extraction and Playwright screenshots. |
+| `tokensx` | working | Approximate token counts for saved outputs. |
 
 See [ROADMAP.md](ROADMAP.md) for the build order.
 
@@ -21,6 +22,7 @@ More detail:
 - [Install guide](docs/INSTALL.md)
 - [Secrets guide](docs/SECRETS.md)
 - [Tool ideas](docs/TOOLS.md)
+- [Token economy estimates](docs/TOKEN_ECONOMY.md)
 
 ## Run Without Installing
 

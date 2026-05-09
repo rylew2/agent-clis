@@ -13,6 +13,7 @@ These are good fits because they are read-heavy, can cache raw output, and can r
 | `redditx` | Built. Threads can be huge; CLI caches raw JSON and prints top comments only. |
 | `corosx` | Built. Existing local cache can support reports without live API calls. |
 | `browserx` | Partial. Deterministic links/screenshots are scripted; exploratory console work stays MCP for now. |
+| `tokensx` | Built. Estimates token counts for saved outputs and supports token-economy benchmarks. |
 
 ## Keep MCP For Now
 

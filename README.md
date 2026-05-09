@@ -4,16 +4,16 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 
 ## Tools
 
-| Command | Status | Purpose |
-|---|---|---|
-| `ytx` | working | Fetch YouTube transcripts and save wiki source notes. |
-| `searchx` | working, requires `EXA_API_KEY` | Compact Exa web search/fetch wrapper. |
-| `docsx` | working, search requires `EXA_API_KEY` | Documentation search/read wrapper. |
-| `semgrepx` | working, requires Semgrep CLI | Semgrep wrapper that returns concise findings. |
-| `redditx` | working, public Reddit JSON | Reddit search/thread reader with cached raw data. |
-| `corosx` | working, requires local COROS cache | COROS cache/reporting CLI. |
-| `browserx` | partial | Link extraction and Playwright screenshots. |
-| `tokensx` | working | Approximate token counts for saved outputs. |
+| Command | Status | Replaces / reduces | Purpose |
+|---|---|---|---|
+| `ytx` | working | `youtube-transcript` MCP | Fetch YouTube transcripts and save wiki source notes. |
+| `searchx` | working, requires `EXA_API_KEY` | `exa` MCP | Compact Exa web search/fetch wrapper. |
+| `docsx` | working, search requires `EXA_API_KEY` | `ref` MCP for docs lookup; Exa-backed in this repo | Documentation search/read wrapper. |
+| `semgrepx` | working, requires Semgrep CLI | `semgrep` MCP | Semgrep wrapper that returns concise findings. |
+| `redditx` | working, public Reddit JSON | `reddit` MCP | Reddit search/thread reader with cached raw data. |
+| `corosx` | working, requires local COROS cache | `coros` MCP for read-only reports | COROS cache/reporting CLI. |
+| `browserx` | partial | `playwright` / browser MCP for deterministic checks only | Link extraction and Playwright screenshots. |
+| `tokensx` | working | No MCP replacement; measurement helper | Approximate token counts for saved outputs. |
 
 See [ROADMAP.md](ROADMAP.md) for the build order.
 

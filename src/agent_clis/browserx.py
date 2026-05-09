@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 from pathlib import Path
 from urllib.parse import urljoin
@@ -13,7 +14,17 @@ from .common import AgentCliError, LinkExtractor, main_wrapper, request_text
 def cmd_screenshot(args: argparse.Namespace) -> int:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    command = ["npx", "playwright", "screenshot", args.url, str(output)]
+    playwright = shutil.which("playwright") or shutil.which("playwright.cmd")
+    npx = shutil.which("npx") or shutil.which("npx.cmd")
+    if playwright:
+        command = [playwright, "screenshot", args.url, str(output)]
+    elif npx:
+        command = [npx, "playwright", "screenshot", args.url, str(output)]
+    else:
+        raise AgentCliError(
+            "npx/playwright was not found on PATH.\n"
+            "Install/setup hint: npm install -g playwright && playwright install chromium"
+        )
     try:
         completed = subprocess.run(command, capture_output=True, text=True, check=False)
     except FileNotFoundError as exc:

@@ -16,6 +16,7 @@ import requests
 
 
 DEFAULT_TIMEOUT = 30
+_DOTENV_LOADED = False
 
 for stream in (sys.stdout, sys.stderr):
     if hasattr(stream, "reconfigure"):
@@ -26,7 +27,49 @@ class AgentCliError(RuntimeError):
     """Expected CLI error with a clean message."""
 
 
+def _candidate_env_files() -> list[Path]:
+    paths: list[Path] = []
+    paths.append(Path.home() / ".config" / "agent-clis" / ".env")
+
+    package_path = Path(__file__).resolve()
+    if len(package_path.parents) >= 3:
+        paths.append(package_path.parents[2] / ".env")
+
+    for parent in [Path.cwd(), *Path.cwd().parents]:
+        paths.append(parent / ".env")
+
+    deduped: list[Path] = []
+    seen: set[Path] = set()
+    for path in paths:
+        resolved = path.resolve() if path.exists() else path.absolute()
+        if resolved not in seen:
+            seen.add(resolved)
+            deduped.append(path)
+    return deduped
+
+
+def _load_dotenv_once() -> None:
+    global _DOTENV_LOADED
+    if _DOTENV_LOADED:
+        return
+    _DOTENV_LOADED = True
+
+    for path in _candidate_env_files():
+        if not path.is_file():
+            continue
+        for raw_line in path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip("\"'")
+            if key and value and key not in os.environ:
+                os.environ[key] = value
+
+
 def require_env(name: str, help_text: str | None = None) -> str:
+    _load_dotenv_once()
     value = os.getenv(name)
     if value:
         return value

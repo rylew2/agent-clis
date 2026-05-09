@@ -27,7 +27,7 @@ Use environment variables for global CLI use:
 
 Open a new terminal after setting a user environment variable.
 
-For local development, copy `.env.example` to `.env` and fill values. `.env` is ignored by Git.
+For file-based local setup, copy `.env.example` to `.env` and fill values. `.env` is ignored by Git. The CLIs load `.env` from this repo, from the current directory tree, or from `%USERPROFILE%\.config\agent-clis\.env`; real environment variables win over `.env` values.
 
 ## Before Committing
 

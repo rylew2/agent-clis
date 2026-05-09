@@ -98,6 +98,27 @@ The installers use `pipx` if available, otherwise `pip --user -e .`. Open a new 
 
 No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `redditx` currently uses public Reddit JSON endpoints, not OAuth. `searchx` and `docsx search` read `EXA_API_KEY`; `refx` reads `REF_API_KEY`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
 
+## Agent Config Guidance
+
+These CLIs are intended to replace default-loaded MCPs for read-heavy workflows:
+
+| Prefer CLI | Instead of default MCP | Notes |
+|---|---|---|
+| `ytx` | `youtube-transcript` | Transcript fetch and source-note capture. |
+| `refx` | `ref` | First choice for library/framework/API docs when Ref credits are available. |
+| `docsx` | Exa-backed docs search | Fallback when Ref is unavailable, out of credits, or misses coverage. |
+| `searchx` | `exa` | Broader web search/fetch outside dedicated docs lookup. |
+| `semgrepx` | `semgrep` | Native Semgrep scan output, capped and summarized. |
+| `redditx` | `reddit` | Public Reddit search/thread reads. |
+
+Keep browser/Playwright and COROS MCPs optional rather than fully removed if you need exploratory browser control, live UI inspection, COROS auth/sync, workout creation, scheduling, or other write/live API workflows.
+
+Documentation lookup priority:
+
+```text
+refx -> docsx -> searchx
+```
+
 ## Design Rules
 
 - Keep default output short and readable.

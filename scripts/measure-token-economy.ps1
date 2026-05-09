@@ -42,6 +42,7 @@ $results += Invoke-BenchmarkCommand "ytx-transcript" @("ytx", "transcript", "YHk
 $results += Invoke-BenchmarkCommand "searchx-search" @("searchx", "search", "Python argparse documentation", "--limit", "3", "--max-chars", "1000")
 $results += Invoke-BenchmarkCommand "docsx-search" @("docsx", "search", "Python argparse documentation", "--limit", "3", "--max-chars", "1000")
 $results += Invoke-BenchmarkCommand "docsx-read" @("docsx", "read", "https://docs.python.org/3/library/argparse.html", "--max-chars", "1000")
+$results += Invoke-BenchmarkCommand "refx-search" @("refx", "search", "Python argparse documentation", "--max-chars", "1000")
 $results += Invoke-BenchmarkCommand "redditx-search" @("redditx", "search", "Claude Code", "--subreddit", "ClaudeAI", "--limit", "3", "--max-chars", "1000")
 $results += Invoke-BenchmarkCommand "corosx-status" @("corosx", "status")
 $results += Invoke-BenchmarkCommand "browserx-links" @("browserx", "links", "https://example.com", "--limit", "10")

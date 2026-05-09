@@ -41,11 +41,11 @@ Requirements:
 - Store raw responses under ignored `cache/searchx/`.
 - Never print full page text unless `--full` is passed.
 
-## 3. `docsx` - Documentation Lookup
+## 3. `docsx` - Exa-backed Documentation Lookup
 
 Status: working v1. `read` needs no key; `search` uses Exa and requires `EXA_API_KEY`.
 
-Goal: reduce routine Ref MCP usage while preserving precise source attribution. Ref's public docs currently emphasize MCP setup rather than a documented REST search endpoint, so v1 avoids guessing an undocumented API.
+Goal: cover generic docs lookup with Exa search plus direct URL reads. This is useful even when Ref is not configured, but it is not the true Ref backend.
 
 Initial commands:
 
@@ -60,7 +60,28 @@ Requirements:
 - Output URL, title, and concise excerpts.
 - Keep exact fetched content in cache for repeat reads.
 
-## 4. `semgrepx` - Semgrep Wrapper
+## 4. `refx` - Ref-backed Documentation Lookup
+
+Status: working v1. Requires `REF_API_KEY` and available Ref credits. `tools/list` has been verified locally; search/read may return Ref's "Not enough credits" account-level error.
+
+Goal: replace routine Ref MCP usage without loading Ref's MCP tool definitions into the agent session. `refx` talks to Ref's documented MCP HTTP endpoint and returns compact CLI output.
+
+Initial commands:
+
+```powershell
+refx search "python fastapi dependency overrides"
+refx read "https://docs.python.org/3/library/argparse.html" --max-chars 4000
+refx tools
+```
+
+Requirements:
+
+- Read API key from `REF_API_KEY`.
+- Use Ref's MCP HTTP endpoint at `https://api.ref.tools/mcp`.
+- Cache raw tool results under ignored `cache/refx/`.
+- Keep default output capped and readable.
+
+## 5. `semgrepx` - Semgrep Wrapper
 
 Status: working v1. Requires `semgrep` on PATH. Semgrep registry configs may report pseudonymous rule metrics to Semgrep, per Semgrep's own CLI behavior.
 
@@ -79,7 +100,7 @@ Requirements:
 - Return only file, line, severity, rule, and message by default.
 - Save full JSON to cache for later inspection.
 
-## 5. `redditx` - Reddit Research
+## 6. `redditx` - Reddit Research
 
 Status: working v1 using public Reddit JSON endpoints.
 
@@ -98,7 +119,7 @@ Requirements:
 - Print top comments and score metadata.
 - Add hard output caps.
 
-## 6. `corosx` - COROS Reports
+## 7. `corosx` - COROS Reports
 
 Status: working v1 against the local SQLite cache at `~/.config/coros-mcp/cache.db`.
 
@@ -118,7 +139,7 @@ Requirements:
 - Avoid live API calls unless `--sync` is passed.
 - Keep workout creation/scheduling in MCP until write safety is designed.
 
-## 7. `browserx` - Repeatable Browser Checks
+## 8. `browserx` - Repeatable Browser Checks
 
 Status: partial v1. `links` is built. `screenshot` shells to Playwright via `npx`. `console` remains MCP/manual for now.
 

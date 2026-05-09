@@ -30,6 +30,7 @@ Then test:
 ytx --help
 searchx --help
 docsx --help
+refx --help
 semgrepx --help
 redditx --help
 corosx --help

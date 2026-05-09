@@ -12,6 +12,7 @@ Future tools may need credentials:
 |---|---|
 | `searchx` | `EXA_API_KEY` |
 | `docsx search` | `EXA_API_KEY` |
+| `refx` | `REF_API_KEY` and available Ref credits |
 | future `redditx` OAuth mode | Reddit OAuth client ID/secret |
 | `googlex` | Google OAuth/application credentials |
 | `slackx` | Slack bot token |
@@ -23,6 +24,7 @@ Use environment variables for global CLI use:
 
 ```powershell
 [Environment]::SetEnvironmentVariable("EXA_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("REF_API_KEY", "your-key", "User")
 ```
 
 Open a new terminal after setting a user environment variable.

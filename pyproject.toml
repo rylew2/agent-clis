@@ -17,6 +17,7 @@ dependencies = [
 browserx = "agent_clis.browserx:main"
 corosx = "agent_clis.corosx:main"
 docsx = "agent_clis.docsx:main"
+refx = "agent_clis.refx:main"
 redditx = "agent_clis.redditx:main"
 searchx = "agent_clis.searchx:main"
 semgrepx = "agent_clis.semgrepx:main"

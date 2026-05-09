@@ -29,6 +29,7 @@ The script writes ignored benchmark files under `cache/token-benchmarks/` and pr
 | `searchx search "Python argparse documentation" --limit 3 --max-chars 1000` vs raw Exa search JSON | 1,845 | 46,430 | 44,585 | 96% |
 | `docsx search "Python argparse documentation" --limit 3 --max-chars 1000` vs raw Exa search JSON | 1,845 | 46,431 | 44,586 | 96% |
 | `docsx read https://docs.python.org/3/library/argparse.html --max-chars 1000` vs full extracted page | 636 | 42,137 | 41,501 | 98% |
+| `refx search "Python argparse documentation" --max-chars 1000` vs raw Ref MCP tool result | 547 | 317 | None; CLI output is larger because it adds formatting and the cache path | Startup/schema savings only |
 | `searchx fetch https://docs.python.org/3/library/argparse.html --max-chars 1000` vs raw Exa contents JSON | 650 | 20,729 | 20,079 | 97% |
 | `redditx search "Claude Code" --subreddit ClaudeAI --limit 3 --max-chars 1000` vs raw Reddit JSON | 1,624 | 5,158 | 3,534 | 69% |
 | `semgrepx scan . --config auto --limit 5` with no findings vs raw Semgrep JSON | 57 | 950 | 893 | 94% |
@@ -62,4 +63,4 @@ CLI estimated cost = CLI output cost
 
 For repeated sessions where an MCP is loaded but rarely used, the startup/schema cost matters more than any single call. That is the main reason these CLIs exist: keep routine read-heavy integrations available from the terminal without carrying their tool definitions in every agent session.
 
-The strongest CLI wins so far are `searchx`, `docsx`, `redditx`, and `semgrepx`, because they cap output and cache raw data. `ytx` still returns a large transcript, so its main win is avoiding MCP startup cost and making transcript capture scriptable. `browserx` is intentionally partial: use CLI commands for deterministic links/screenshots, but keep browser MCPs for live inspection and clicking.
+The strongest output-reduction wins so far are `searchx`, `docsx`, `redditx`, and `semgrepx`, because they cap output and cache raw data. `refx` is different: Ref's search result is already compact, so the main win is avoiding Ref MCP startup/schema cost in agent sessions. `ytx` still returns a large transcript, so its main win is avoiding MCP startup cost and making transcript capture scriptable. `browserx` is intentionally partial: use CLI commands for deterministic links/screenshots, but keep browser MCPs for live inspection and clicking.

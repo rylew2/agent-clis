@@ -4,7 +4,7 @@ No API keys or tokens should be committed to this repo.
 
 ## Current State
 
-`ytx`, `semgrepx`, `redditx`, `corosx`, and `browserx links` do not require API keys. `browserx screenshot` requires local Playwright tooling, not an API key.
+`ytx`, `semgrepx`, `redditx`, `corosx`, and `browserx links` do not require API keys. `redditx` currently uses public Reddit JSON endpoints and does not use OAuth credentials. `browserx screenshot` requires local Playwright tooling, not an API key.
 
 Future tools may need credentials:
 
@@ -12,7 +12,7 @@ Future tools may need credentials:
 |---|---|
 | `searchx` | `EXA_API_KEY` |
 | `docsx search` | `EXA_API_KEY` |
-| `redditx` | Reddit OAuth client ID/secret or read-only public endpoints |
+| future `redditx` OAuth mode | Reddit OAuth client ID/secret |
 | `googlex` | Google OAuth/application credentials |
 | `slackx` | Slack bot token |
 | `atlassianx` | Atlassian API token |

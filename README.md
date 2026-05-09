@@ -24,6 +24,21 @@ More detail:
 - [Tool ideas](docs/TOOLS.md)
 - [Token economy estimates](docs/TOKEN_ECONOMY.md)
 
+## Token Savings Snapshot
+
+Measured on 2026-05-09 with `tokensx`. These are approximate output-token counts, not billing-grade tokenizer numbers, and they exclude MCP startup/schema overhead.
+
+| Task | CLI output | Raw / MCP-style payload | Output reduction |
+|---|---:|---:|---:|
+| `searchx search` for Python argparse docs | 1,845 | 46,430 | 96% |
+| `docsx read` Python argparse page | 636 | 42,137 | 98% |
+| `searchx fetch` Python argparse page | 650 | 20,729 | 97% |
+| `redditx search` Claude Code posts | 1,624 | 5,158 | 69% |
+| `semgrepx scan` with no findings | 57 | 950 | 94% |
+| `ytx transcript` vs timestamped segments | 9,705 | 12,868 | 25% |
+
+See [docs/TOKEN_ECONOMY.md](docs/TOKEN_ECONOMY.md) for the full methodology and MCP startup-cost estimates.
+
 ## Run Without Installing
 
 From this repo:
@@ -59,7 +74,7 @@ The installer uses `pipx` if available, otherwise `pip --user -e .`. Open a new 
 
 ## Secrets
 
-No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `searchx` and `docsx search` read `EXA_API_KEY`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
+No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `redditx` currently uses public Reddit JSON endpoints, not OAuth. `searchx` and `docsx search` read `EXA_API_KEY`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
 
 ## Design Rules
 

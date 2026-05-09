@@ -9,7 +9,9 @@ dist/
 build/
 .env
 .env.*
+!.env.example
 secrets.*
+!docs/SECRETS.md
 cache/
 *.sqlite
 *.sqlite-shm

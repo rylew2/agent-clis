@@ -16,6 +16,12 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 
 See [ROADMAP.md](ROADMAP.md) for the build order.
 
+More detail:
+
+- [Install guide](docs/INSTALL.md)
+- [Secrets guide](docs/SECRETS.md)
+- [Tool ideas](docs/TOOLS.md)
+
 ## Run Without Installing
 
 From this repo:
@@ -36,7 +42,7 @@ Or use the PowerShell launcher:
 From this repo:
 
 ```powershell
-python -m pip install -e .
+.\scripts\install.ps1
 ```
 
 Then run from any directory:
@@ -44,6 +50,12 @@ Then run from any directory:
 ```powershell
 ytx transcript YHk45NEpspE
 ```
+
+The installer uses `pipx` if available, otherwise `pip --user -e .`. Open a new terminal after install if the command is not immediately found.
+
+## Secrets
+
+No secrets are required for `ytx`. Future tools will read credentials from environment variables such as `EXA_API_KEY`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
 
 ## Design Rules
 

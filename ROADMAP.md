@@ -130,3 +130,16 @@ Requirements:
 - `googlex`: read-only Gmail/calendar summaries, with careful OAuth and PII handling.
 - `slackx`: read-only channel/search summaries; writes require dry-run and confirmation.
 - `atlassianx`: Jira/Confluence reads; writes require explicit audit logging.
+
+## Packaging
+
+The repo should stay clone-and-install simple:
+
+```powershell
+git clone <repo-url>
+cd agent-clis
+.\scripts\install.ps1
+ytx --help
+```
+
+No API keys belong in Git. Add required future credentials as environment variables documented in `docs/SECRETS.md`.

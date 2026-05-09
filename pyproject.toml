@@ -9,10 +9,17 @@ description = "Small agent-native command line tools for local workflows."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "requests>=2.32.0",
   "youtube-transcript-api>=1.2.0",
 ]
 
 [project.scripts]
+browserx = "agent_clis.browserx:main"
+corosx = "agent_clis.corosx:main"
+docsx = "agent_clis.docsx:main"
+redditx = "agent_clis.redditx:main"
+searchx = "agent_clis.searchx:main"
+semgrepx = "agent_clis.semgrepx:main"
 ytx = "agent_clis.ytx:main"
 
 [tool.setuptools.packages.find]

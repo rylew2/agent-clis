@@ -4,14 +4,14 @@ No API keys or tokens should be committed to this repo.
 
 ## Current State
 
-`ytx` does not require an API key.
+`ytx`, `semgrepx`, `redditx`, `corosx`, and `browserx links` do not require API keys. `browserx screenshot` requires local Playwright tooling, not an API key.
 
 Future tools may need credentials:
 
 | Tool | Secret source |
 |---|---|
 | `searchx` | `EXA_API_KEY` |
-| `docsx` | `REF_API_KEY` if using Ref directly |
+| `docsx search` | `EXA_API_KEY` |
 | `redditx` | Reddit OAuth client ID/secret or read-only public endpoints |
 | `googlex` | Google OAuth/application credentials |
 | `slackx` | Slack bot token |

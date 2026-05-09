@@ -28,8 +28,19 @@ Then test:
 
 ```powershell
 ytx --help
+searchx --help
+docsx --help
+semgrepx --help
+redditx --help
+corosx --help
+browserx --help
 ytx transcript YHk45NEpspE --no-header
 ```
+
+Optional external tools:
+
+- `semgrepx` needs Semgrep on PATH: `python -m pip install semgrep`. Registry configs such as `auto` may report pseudonymous rule metrics to Semgrep.
+- `browserx screenshot` needs Playwright's Node CLI: `npm install -g playwright` and `playwright install chromium`
 
 ## Update After Pull
 

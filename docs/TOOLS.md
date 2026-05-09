@@ -7,12 +7,12 @@ These are good fits because they are read-heavy, can cache raw output, and can r
 | Tool | Why it fits |
 |---|---|
 | `ytx` | No auth, narrow transcript fetch, immediate replacement for YouTube transcript MCP. |
-| `searchx` | Search/fetch output can be capped and cached before the model sees it. |
-| `docsx` | Documentation search needs exact URLs and concise excerpts, not a full MCP server in every session. |
-| `semgrepx` | Semgrep is already CLI-native; wrapper can summarize findings. |
-| `redditx` | Threads can be huge; CLI can cache raw JSON and print top comments only. |
-| `corosx` | Existing local cache can support reports without live API calls. |
-| `browserx` | Deterministic screenshots/smoke checks can be scripted. |
+| `searchx` | Built. Search/fetch output can be capped and cached before the model sees it. |
+| `docsx` | Built. Documentation search needs exact URLs and concise excerpts, not a full MCP server in every session. |
+| `semgrepx` | Built. Semgrep is already CLI-native; wrapper summarizes findings. |
+| `redditx` | Built. Threads can be huge; CLI caches raw JSON and prints top comments only. |
+| `corosx` | Built. Existing local cache can support reports without live API calls. |
+| `browserx` | Partial. Deterministic links/screenshots are scripted; exploratory console work stays MCP for now. |
 
 ## Keep MCP For Now
 

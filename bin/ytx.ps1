@@ -10,3 +10,4 @@ if ($env:PYTHONPATH) {
 }
 
 python -m agent_clis.ytx @args
+exit $LASTEXITCODE

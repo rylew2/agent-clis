@@ -23,6 +23,8 @@ Next improvements:
 
 ## 2. `searchx` - Web Search / Fetch
 
+Status: working v1. Requires `EXA_API_KEY`.
+
 Goal: reduce routine Exa MCP usage.
 
 Initial commands:
@@ -41,7 +43,9 @@ Requirements:
 
 ## 3. `docsx` - Documentation Lookup
 
-Goal: reduce routine Ref MCP usage while preserving precise source attribution.
+Status: working v1. `read` needs no key; `search` uses Exa and requires `EXA_API_KEY`.
+
+Goal: reduce routine Ref MCP usage while preserving precise source attribution. Ref's public docs currently emphasize MCP setup rather than a documented REST search endpoint, so v1 avoids guessing an undocumented API.
 
 Initial commands:
 
@@ -57,6 +61,8 @@ Requirements:
 - Keep exact fetched content in cache for repeat reads.
 
 ## 4. `semgrepx` - Semgrep Wrapper
+
+Status: working v1. Requires `semgrep` on PATH. Semgrep registry configs may report pseudonymous rule metrics to Semgrep, per Semgrep's own CLI behavior.
 
 Goal: replace Semgrep MCP with native CLI use.
 
@@ -75,6 +81,8 @@ Requirements:
 
 ## 5. `redditx` - Reddit Research
 
+Status: working v1 using public Reddit JSON endpoints.
+
 Goal: reduce Reddit MCP use for read-only research.
 
 Initial commands:
@@ -91,6 +99,8 @@ Requirements:
 - Add hard output caps.
 
 ## 6. `corosx` - COROS Reports
+
+Status: working v1 against the local SQLite cache at `~/.config/coros-mcp/cache.db`.
 
 Goal: use the existing COROS local cache for routine reports without loading COROS MCP tools.
 
@@ -109,6 +119,8 @@ Requirements:
 - Keep workout creation/scheduling in MCP until write safety is designed.
 
 ## 7. `browserx` - Repeatable Browser Checks
+
+Status: partial v1. `links` is built. `screenshot` shells to Playwright via `npx`. `console` remains MCP/manual for now.
 
 Goal: reduce Playwright MCP usage for deterministic checks.
 

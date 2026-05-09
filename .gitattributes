@@ -1,0 +1,12 @@
+/.gitattributes text eol=lf
+*.ps1 text eol=crlf
+*.sh text eol=lf
+/bin/browserx text eol=lf
+/bin/corosx text eol=lf
+/bin/docsx text eol=lf
+/bin/redditx text eol=lf
+/bin/refx text eol=lf
+/bin/searchx text eol=lf
+/bin/semgrepx text eol=lf
+/bin/tokensx text eol=lf
+/bin/ytx text eol=lf

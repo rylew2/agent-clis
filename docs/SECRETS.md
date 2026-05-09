@@ -20,22 +20,40 @@ Future tools may need credentials:
 
 ## Setup Pattern
 
-Use environment variables for global CLI use:
+Use environment variables for global CLI use.
+
+Windows PowerShell:
 
 ```powershell
 [Environment]::SetEnvironmentVariable("EXA_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("REF_API_KEY", "your-key", "User")
 ```
 
-Open a new terminal after setting a user environment variable.
+macOS/Linux:
 
-For file-based local setup, copy `.env.example` to `.env` and fill values. `.env` is ignored by Git. The CLIs load `.env` from this repo, from the current directory tree, or from `%USERPROFILE%\.config\agent-clis\.env`; real environment variables win over `.env` values.
+```sh
+export EXA_API_KEY="your-key"
+export REF_API_KEY="your-key"
+```
+
+Add those `export` lines to `~/.zshrc`, `~/.bashrc`, or another private shell startup file if you want them available in every terminal. Open a new terminal after setting persistent environment variables.
+
+For file-based local setup, copy `.env.example` to `.env` and fill values. `.env` is ignored by Git. The CLIs load `.env` from this repo, from the current directory tree, or from `%USERPROFILE%\.config\agent-clis\.env` on Windows or `~/.config/agent-clis/.env` on macOS/Linux; real environment variables win over `.env` values.
 
 ## Before Committing
 
 Run:
 
+Windows:
+
 ```powershell
+rg -n "api[_-]?key|token|secret|password|sk-|ghp_|xox|AIza" .
+git status --short
+```
+
+macOS/Linux:
+
+```sh
 rg -n "api[_-]?key|token|secret|password|sk-|ghp_|xox|AIza" .
 git status --short
 ```

@@ -15,8 +15,16 @@ These are estimates, not billing-grade tokenizer counts. They are good enough fo
 
 ## Regenerate
 
+Windows:
+
 ```powershell
 .\scripts\measure-token-economy.ps1
+```
+
+macOS/Linux:
+
+```sh
+./scripts/measure-token-economy.sh
 ```
 
 The script writes ignored benchmark files under `cache/token-benchmarks/` and prints a Markdown table using `tokensx`.

@@ -10,7 +10,7 @@ Replaces routine use of the `youtube-transcript` MCP for read-only transcript ca
 
 Commands:
 
-```powershell
+```sh
 ytx transcript <url-or-video-id>
 ytx transcript <url-or-video-id> --format json
 ytx save-source <url-or-video-id> --title "..." -o path/to/source.md
@@ -29,7 +29,7 @@ Goal: reduce routine Exa MCP usage.
 
 Initial commands:
 
-```powershell
+```sh
 searchx search "query" --limit 5
 searchx fetch "https://example.com" --max-chars 4000
 ```
@@ -49,7 +49,7 @@ Goal: cover generic docs lookup with Exa search plus direct URL reads. This is u
 
 Initial commands:
 
-```powershell
+```sh
 docsx search "python fastapi dependency overrides" --limit 5
 docsx read "<exact-doc-url>" --max-chars 4000
 ```
@@ -68,7 +68,7 @@ Goal: replace routine Ref MCP usage without loading Ref's MCP tool definitions i
 
 Initial commands:
 
-```powershell
+```sh
 refx search "python fastapi dependency overrides"
 refx read "https://docs.python.org/3/library/argparse.html" --max-chars 4000
 refx tools
@@ -89,7 +89,7 @@ Goal: replace Semgrep MCP with native CLI use.
 
 Initial commands:
 
-```powershell
+```sh
 semgrepx scan --config auto
 semgrepx scan --severity ERROR
 ```
@@ -108,7 +108,7 @@ Goal: reduce Reddit MCP use for read-only research.
 
 Initial commands:
 
-```powershell
+```sh
 redditx search "query" --subreddit ClaudeAI --limit 10
 redditx thread "<url>" --top 20
 ```
@@ -127,7 +127,7 @@ Goal: use the existing COROS local cache for routine reports without loading COR
 
 Initial commands:
 
-```powershell
+```sh
 corosx daily --weeks 4
 corosx sleep --weeks 4
 corosx activities --from 20260501 --to 20260509
@@ -147,7 +147,7 @@ Goal: reduce Playwright MCP usage for deterministic checks.
 
 Initial commands:
 
-```powershell
+```sh
 browserx screenshot http://localhost:3000 --out screenshot.png
 browserx console http://localhost:3000
 browserx links http://localhost:3000
@@ -168,10 +168,21 @@ Requirements:
 
 The repo should stay clone-and-install simple:
 
+Windows:
+
 ```powershell
 git clone <repo-url>
 cd agent-clis
 .\scripts\install.ps1
+ytx --help
+```
+
+macOS/Linux:
+
+```sh
+git clone <repo-url>
+cd agent-clis
+./scripts/install.sh
 ytx --help
 ```
 

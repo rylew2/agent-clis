@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+repo_root="$(cd "$(dirname "$0")/.." && pwd)"
+if command -v python3 >/dev/null 2>&1; then
+  python_cmd="python3"
+else
+  python_cmd="python"
+fi
+PYTHONPATH="$repo_root/src${PYTHONPATH:+:$PYTHONPATH}" exec "$python_cmd" -m agent_clis.refx "$@"

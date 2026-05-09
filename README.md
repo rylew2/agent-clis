@@ -43,7 +43,7 @@ See [docs/TOKEN_ECONOMY.md](docs/TOKEN_ECONOMY.md) for the full methodology and 
 
 ## Run Without Installing
 
-From this repo:
+From this repo on Windows:
 
 ```powershell
 $env:PYTHONPATH = ".\src"
@@ -57,22 +57,42 @@ Or use the PowerShell launcher:
 .\bin\ytx.ps1 transcript YHk45NEpspE --no-header
 ```
 
+From this repo on macOS/Linux:
+
+```sh
+export PYTHONPATH="$PWD/src"
+python3 -m agent_clis.ytx transcript YHk45NEpspE --no-header
+python3 -m agent_clis.searchx search "agent cli tools" --limit 3
+```
+
+Or use the shell launcher:
+
+```sh
+./bin/ytx transcript YHk45NEpspE --no-header
+```
+
 ## Install For Local Use
 
-From this repo:
+The commands are exposed through Python package entry points, so the installed CLIs are cross-platform. From this repo on Windows:
 
 ```powershell
 .\scripts\install.ps1
 ```
 
+From this repo on macOS/Linux:
+
+```sh
+./scripts/install.sh
+```
+
 Then run from any directory:
 
-```powershell
+```sh
 ytx transcript YHk45NEpspE
 searchx search "agent cli tools" --limit 3
 ```
 
-The installer uses `pipx` if available, otherwise `pip --user -e .`. Open a new terminal after install if the command is not immediately found.
+The installers use `pipx` if available, otherwise `pip --user -e .`. Open a new terminal after install if the command is not immediately found.
 
 ## Secrets
 

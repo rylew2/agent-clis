@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-clis"
+version = "0.1.0"
+description = "Small agent-native command line tools for local workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "youtube-transcript-api>=1.2.0",
+]
+
+[project.scripts]
+ytx = "agent_clis.ytx:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

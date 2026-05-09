@@ -34,7 +34,7 @@ Measured on 2026-05-09 with `tokensx`. These are approximate output-token counts
 | `searchx search` for Python argparse docs | Raw Exa search JSON, similar to what an Exa MCP call may expose if not compacted | 1,845 | 46,430 | 96% |
 | `docsx read` Python argparse page | Full extracted documentation page text | 636 | 42,137 | 98% |
 | `searchx fetch` Python argparse page | Raw Exa contents JSON, similar to an Exa fetch MCP payload if not compacted | 650 | 20,729 | 97% |
-| `refx search` for Python argparse docs | Raw Ref MCP tool result | 547 | 317 | None; Ref search is already compact, so the win is avoiding MCP startup/schema cost |
+| `refx search` for Python argparse docs | Raw Ref MCP tool result plus estimated 400-1,000 token MCP startup/schema cost | 547 | 717-1,317 total | ~24-58% total savings; no output-only win |
 | `redditx search` Claude Code posts | Raw Reddit public JSON search response | 1,624 | 5,158 | 69% |
 | `semgrepx scan` with no findings | Raw Semgrep JSON output | 57 | 950 | 94% |
 | `ytx transcript` | Timestamped YouTube transcript segments | 9,705 | 12,868 | 25% |

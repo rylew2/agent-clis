@@ -11,7 +11,7 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 | `docsx` | working, search requires `EXA_API_KEY` | Docs-search workflows; Exa-backed | Generic documentation search/read wrapper. |
 | `refx` | working, requires `REF_API_KEY` and Ref credits | `ref` MCP | Ref-backed documentation lookup via Ref's MCP HTTP endpoint. |
 | `semgrepx` | working, requires Semgrep CLI | `semgrep` MCP | Semgrep wrapper that returns concise findings. |
-| `redditx` | working, public Reddit JSON | `reddit` MCP | Reddit search/thread reader with cached raw data. |
+| `redditx` | working, reads public old.reddit pages (no API key; rate-limited) | `reddit` MCP | Reddit search/thread reader with cached raw data. |
 | `corosx` | working, requires local COROS cache | `coros` MCP for read-only reports | COROS cache/reporting CLI. |
 | `browserx` | partial | `playwright` / browser MCP for deterministic checks only | Link extraction and Playwright screenshots. |
 | `tokensx` | working | No MCP replacement; measurement helper | Approximate token counts for saved outputs. |
@@ -96,7 +96,7 @@ The installers use `pipx` if available, otherwise `pip --user -e .`. Open a new 
 
 ## Secrets
 
-No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `redditx` currently uses public Reddit JSON endpoints, not OAuth. `searchx` and `docsx search` read `EXA_API_KEY`; `refx` reads `REF_API_KEY`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
+No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `redditx` reads public old.reddit.com pages and is rate-limited per IP, so space repeated calls a few seconds apart. `searchx` and `docsx search` read `EXA_API_KEY`; `refx` reads `REF_API_KEY`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
 
 ## Agent Config Guidance
 

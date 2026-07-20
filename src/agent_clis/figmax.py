@@ -86,13 +86,13 @@ def describe_node(node: dict[str, Any]) -> str:
     return " ".join(parts)
 
 
-def print_tree(node: dict[str, Any], indent: int, max_depth: int, all_types: bool) -> None:
-    if node.get("type") in SUMMARY_NODE_TYPES or all_types or indent == 0:
+def print_tree(node: dict[str, Any], indent: int, all_types: bool) -> None:
+    printed = node.get("type") in SUMMARY_NODE_TYPES or all_types or indent == 0
+    if printed:
         print("  " * indent + describe_node(node))
-    if max_depth and indent >= max_depth:
-        return
+    child_indent = indent + 1 if printed else indent
     for child in node.get("children", []) or []:
-        print_tree(child, indent + 1, max_depth, all_types)
+        print_tree(child, child_indent, all_types)
 
 
 def cmd_file(args: argparse.Namespace) -> int:
@@ -109,7 +109,7 @@ def cmd_file(args: argparse.Namespace) -> int:
     print(f"Key: {file_key}")
     print(f"Last modified: {data.get('lastModified', '?')}  Editor: {data.get('editorType', '?')}")
     print()
-    print_tree(data.get("document", {}), 0, 0, args.all_nodes)
+    print_tree(data.get("document", {}), 0, args.all_nodes)
     print()
     print(f"[raw cached: {cache_path}]")
     return 0
@@ -133,7 +133,7 @@ def cmd_node(args: argparse.Namespace) -> int:
             print(f"## {node_id}: not found")
             continue
         print(f"## {node_id}")
-        print_tree(entry.get("document", {}), 0, 0, all_types=True)
+        print_tree(entry.get("document", {}), 0, all_types=True)
         print()
     print(f"[raw cached: {cache_path}]")
     return 0
@@ -191,13 +191,27 @@ def cmd_comments(args: argparse.Namespace) -> int:
     return 0
 
 
+def positive_int(value: str) -> int:
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return number
+
+
+def scale_value(value: str) -> float:
+    number = float(value)
+    if not 0.01 <= number <= 4:
+        raise argparse.ArgumentTypeError("must be between 0.01 and 4")
+    return number
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="figmax", description="Read-only Figma REST API CLI.")
     sub = parser.add_subparsers(dest="command", required=True)
 
     file_cmd = sub.add_parser("file", help="Summarize a file's page/frame tree.")
     file_cmd.add_argument("file", help="Figma file URL or file key.")
-    file_cmd.add_argument("--depth", type=int, default=2, help="Document tree depth to fetch (default 2).")
+    file_cmd.add_argument("--depth", type=positive_int, default=2, help="Document tree depth to fetch (default 2).")
     file_cmd.add_argument("--all-nodes", action="store_true", help="Print every node type, not just containers.")
     file_cmd.add_argument("--format", choices=["markdown", "json"], default="markdown")
     file_cmd.set_defaults(func=cmd_file)
@@ -205,7 +219,7 @@ def build_parser() -> argparse.ArgumentParser:
     node = sub.add_parser("node", help="Inspect specific nodes.")
     node.add_argument("file", help="Figma file URL (node-id param respected) or file key.")
     node.add_argument("--id", help="Comma separated node ids (1:23 or 1-23).")
-    node.add_argument("--depth", type=int, default=None, help="Subtree depth to fetch.")
+    node.add_argument("--depth", type=positive_int, default=None, help="Subtree depth to fetch.")
     node.add_argument("--format", choices=["markdown", "json"], default="markdown")
     node.set_defaults(func=cmd_node)
 
@@ -213,7 +227,7 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("file", help="Figma file URL (node-id param respected) or file key.")
     export.add_argument("--id", help="Comma separated node ids (1:23 or 1-23).")
     export.add_argument("--fmt", choices=["png", "jpg", "svg", "pdf"], default="png")
-    export.add_argument("--scale", type=float, default=1, help="Scale factor 0.01-4 (default 1).")
+    export.add_argument("--scale", type=scale_value, default=1, help="Scale factor 0.01-4 (default 1).")
     export.add_argument("--out", help="Output directory (default: figmax cache dir).")
     export.set_defaults(func=cmd_export)
 

@@ -12,6 +12,7 @@ These are good fits because they are read-heavy, can cache raw output, and can r
 | `refx` | Built. Ref-backed documentation lookup through Ref's MCP HTTP endpoint without loading Ref MCP into the agent session. |
 | `semgrepx` | Built. Semgrep is already CLI-native; wrapper summarizes findings. |
 | `redditx` | Built. Threads can be huge; CLI caches raw JSON and prints top comments only. |
+| `figmax` | Built. Full file JSON is huge; CLI depth-limits fetches, prints compact node trees, and caches raw responses. |
 | `corosx` | Built. Existing local cache can support reports without live API calls. |
 | `browserx` | Partial. Deterministic links/screenshots are scripted; exploratory console work stays MCP for now. |
 | `tokensx` | Built. Estimates token counts for saved outputs and supports token-economy benchmarks. |

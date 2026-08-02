@@ -18,9 +18,15 @@ import requests
 DEFAULT_TIMEOUT = 30
 _DOTENV_LOADED = False
 
-for stream in (sys.stdout, sys.stderr):
-    if hasattr(stream, "reconfigure"):
-        stream.reconfigure(encoding="utf-8", errors="replace")
+
+def configure_stdio() -> None:
+    """Force UTF-8 output so non-Latin-1 text survives the Windows console."""
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+configure_stdio()
 
 
 class AgentCliError(RuntimeError):

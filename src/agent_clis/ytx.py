@@ -13,6 +13,8 @@ from typing import Any
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
+from .common import configure_stdio
+
 
 VIDEO_ID_RE = re.compile(r"^[a-zA-Z0-9_-]{11}$")
 VIDEO_URL_RE = re.compile(r"(?:v=|/v/|youtu\.be/|/embed/|/shorts/)([a-zA-Z0-9_-]{11})")
@@ -122,6 +124,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    configure_stdio()
     parser = build_parser()
     args = parser.parse_args(argv)
     try:

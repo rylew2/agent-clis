@@ -115,6 +115,15 @@ def clean_ws(text: str) -> str:
     return text.strip()
 
 
+ERROR_BODY_CHARS = 200
+
+
+def http_error(method: str, url: str, response: Any) -> AgentCliError:
+    """Build an HTTP error whose body preview cannot flood agent context."""
+    body = truncate(clean_ws(response.text), ERROR_BODY_CHARS)
+    return AgentCliError(f"{method} {url} failed: HTTP {response.status_code} {body}")
+
+
 def request_json(
     method: str,
     url: str,
@@ -133,14 +142,14 @@ def request_json(
         timeout=timeout,
     )
     if response.status_code >= 400:
-        raise AgentCliError(f"{method} {url} failed: HTTP {response.status_code} {response.text[:500]}")
+        raise http_error(method, url, response)
     return response.json()
 
 
 def request_text(url: str, *, headers: dict[str, str] | None = None, timeout: int = DEFAULT_TIMEOUT) -> str:
     response = requests.get(url, headers=headers, timeout=timeout)
     if response.status_code >= 400:
-        raise AgentCliError(f"GET {url} failed: HTTP {response.status_code} {response.text[:500]}")
+        raise http_error("GET", url, response)
     return response.text
 
 
@@ -205,11 +214,21 @@ def html_to_text(html: str) -> str:
 
 
 def main_wrapper(func) -> int:
+    """Run a CLI entrypoint and turn every failure into a one-line message.
+
+    Exit codes: 0 success, 1 ran and failed, 2 called wrong (argparse owns 2),
+    130 interrupted. Set AGENT_CLIS_TRACEBACK=1 to re-raise for debugging.
+    """
     try:
         return func()
     except AgentCliError as exc:
         print(f"error: {exc}", file=sys.stderr)
-        return 2
+        return 1
     except KeyboardInterrupt:
         print("interrupted", file=sys.stderr)
         return 130
+    except Exception as exc:  # noqa: BLE001 - a traceback would flood agent context.
+        if os.getenv("AGENT_CLIS_TRACEBACK"):
+            raise
+        print(f"error: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 1

@@ -6,14 +6,13 @@ import argparse
 import datetime as dt
 import json
 import re
-import sys
 from pathlib import Path
 from typing import Any
 
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
-from .common import configure_stdio
+from .common import AgentCliError, main_wrapper, truncate
 
 
 VIDEO_ID_RE = re.compile(r"^[a-zA-Z0-9_-]{11}$")
@@ -26,7 +25,7 @@ def extract_video_id(url_or_id: str) -> str:
         return match.group(1)
     if VIDEO_ID_RE.match(url_or_id):
         return url_or_id
-    raise ValueError(f"Could not extract video ID from '{url_or_id}'")
+    raise AgentCliError(f"Could not extract video ID from '{url_or_id}'")
 
 
 def fetch_transcript(url_or_id: str, language: str) -> dict[str, Any]:
@@ -62,6 +61,9 @@ def write_or_print(content: str, output: Path | None) -> None:
 
 def cmd_transcript(args: argparse.Namespace) -> int:
     data = fetch_transcript(args.url, args.language)
+    # Only cap what lands in the terminal; a file write should stay complete.
+    if args.output is None and not args.full:
+        data = {**data, "text": truncate(data["text"], args.max_chars)}
     if args.format == "json":
         content = json.dumps(data, indent=2, ensure_ascii=False)
     else:
@@ -109,6 +111,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output format.",
     )
     transcript.add_argument("--no-header", action="store_true", help="Only print transcript text.")
+    transcript.add_argument(
+        "--max-chars",
+        type=int,
+        default=20000,
+        help="Cap transcript text printed to stdout. Ignored when writing to a file.",
+    )
+    transcript.add_argument("--full", action="store_true", help="Print the transcript uncapped.")
     transcript.add_argument("-o", "--output", type=Path, help="Write output to a file.")
     transcript.set_defaults(func=cmd_transcript)
 
@@ -124,14 +133,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    configure_stdio()
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    try:
+    def run() -> int:
+        args = build_parser().parse_args(argv)
         return args.func(args)
-    except Exception as exc:  # noqa: BLE001 - CLI should print clean errors.
-        print(f"ytx: {exc}", file=sys.stderr)
-        return 1
+
+    return main_wrapper(run)
 
 
 if __name__ == "__main__":

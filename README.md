@@ -19,6 +19,35 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 
 See [ROADMAP.md](ROADMAP.md) for the build order.
 
+## Shared Contract
+
+Every CLI honours the same contract so an agent can branch on the result without
+spending context reading output.
+
+**Exit codes**
+
+| Code | Meaning | Agent's next move |
+|---|---|---|
+| `0` | Success | Continue. |
+| `1` | Ran and failed (bad URL, missing cache, network error) | The arguments were fine; the resource is not. |
+| `2` | Called wrong (argparse usage error) | Re-read `--help` and retry with different arguments. |
+| `130` | Interrupted | — |
+
+**Errors** go to stderr as a single `error: ...` line, never a traceback, and
+never with more than 200 characters of any HTTP response body. stdout carries
+data only. Set `AGENT_CLIS_TRACEBACK=1` to re-raise the original exception when
+debugging.
+
+**Output** is capped by default on every read path (`--max-chars`, `--limit`)
+with `--full` to opt out. `--format json` emits exactly one JSON document, so
+results are pipeable to `jq`.
+
+## Tests
+
+```sh
+python -m pytest
+```
+
 More detail:
 
 - [Install guide](docs/INSTALL.md)

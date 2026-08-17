@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
   "requests>=2.32.0",
   "youtube-transcript-api>=1.2.0",
+  "keyring>=25",
 ]
 
 [project.scripts]
@@ -21,6 +22,7 @@ refx = "agent_clis.refx:main"
 figmax = "agent_clis.figmax:main"
 redditx = "agent_clis.redditx:main"
 searchx = "agent_clis.searchx:main"
+secretsx = "agent_clis.secretsx:main"
 semgrepx = "agent_clis.semgrepx:main"
 tokensx = "agent_clis.tokensx:main"
 ytx = "agent_clis.ytx:main"

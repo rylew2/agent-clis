@@ -16,6 +16,7 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 | `corosx` | working, requires local COROS cache | `coros` MCP for read-only reports | COROS cache/reporting CLI. |
 | `browserx` | partial | `playwright` / browser MCP for deterministic checks only | Link extraction and Playwright screenshots. |
 | `tokensx` | working | No MCP replacement; measurement helper | Approximate token counts for saved outputs. |
+| `secretsx` | working | No MCP; local secret management | Store/list/import agent-clis secrets in the OS credential store (Windows Credential Manager). |
 
 See [ROADMAP.md](ROADMAP.md) for the build order.
 

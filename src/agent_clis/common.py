@@ -18,6 +18,24 @@ import requests
 DEFAULT_TIMEOUT = 30
 _DOTENV_LOADED = False
 
+# Windows Credential Manager "service"/target name. Each secret is stored under
+# (service=KEYRING_SERVICE, username=<VAR_NAME>) via the `keyring` library, whose
+# active backend on this machine is WinVaultKeyring (Credential Manager).
+KEYRING_SERVICE = "agent-clis"
+
+# Genuine secrets that belong in the credential store. Non-secret config
+# (REDDIT_USER_AGENT, ATLASSIAN_BASE_URL, ATLASSIAN_EMAIL,
+# GOOGLE_APPLICATION_CREDENTIALS which is a file path) intentionally stays in .env.
+SECRET_NAMES = (
+    "EXA_API_KEY",
+    "REF_API_KEY",
+    "FIGMA_TOKEN",
+    "SLACK_BOT_TOKEN",
+    "ATLASSIAN_API_TOKEN",
+    "REDDIT_CLIENT_ID",
+    "REDDIT_CLIENT_SECRET",
+)
+
 
 def configure_stdio() -> None:
     """Force UTF-8 output so non-Latin-1 text survives the Windows console."""
@@ -74,9 +92,32 @@ def _load_dotenv_once() -> None:
                 os.environ[key] = value
 
 
+def _get_from_keyring(name: str) -> str | None:
+    """Fetch a secret from Windows Credential Manager, or None if unavailable.
+
+    Any backend failure (module missing, backend locked) degrades to None so the
+    caller raises a clean "Missing X" error instead of leaking a stack trace.
+    """
+    try:
+        import keyring
+    except Exception:  # noqa: BLE001 - keyring optional at runtime.
+        return None
+    try:
+        return keyring.get_password(KEYRING_SERVICE, name) or None
+    except Exception:  # noqa: BLE001 - backend errors must not crash the CLI.
+        return None
+
+
 def require_env(name: str, help_text: str | None = None) -> str:
+    # Load non-secret config from .env (URLs, user-agent). After migration the
+    # file holds no secrets, so this never surfaces one.
     _load_dotenv_once()
+    # Resolution order: explicit environment override, then the OS credential
+    # store. Secrets no longer fall back to plaintext .env.
     value = os.getenv(name)
+    if value:
+        return value
+    value = _get_from_keyring(name)
     if value:
         return value
     extra = f" {help_text}" if help_text else ""

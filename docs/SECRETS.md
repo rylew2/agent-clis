@@ -21,25 +21,39 @@ Future tools may need credentials:
 
 ## Setup Pattern
 
-Use environment variables for global CLI use.
-
-Windows PowerShell:
-
-```powershell
-[Environment]::SetEnvironmentVariable("EXA_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("REF_API_KEY", "your-key", "User")
-```
-
-macOS/Linux:
+Secrets live in the OS credential store, not in plaintext. On Windows that is
+**Windows Credential Manager** (the equivalent of the macOS Keychain), reached through
+the `keyring` library; on macOS `keyring` uses the Keychain, and on Linux it uses the
+Secret Service / kwallet. Manage entries with the `secretsx` CLI:
 
 ```sh
-export EXA_API_KEY="your-key"
-export REF_API_KEY="your-key"
+secretsx set EXA_API_KEY        # hidden prompt, stored in the credential store
+secretsx set REF_API_KEY
+secretsx list                   # names + whether each is set (never prints values)
+secretsx doctor                 # shows the backend and where each secret resolves from
+secretsx delete EXA_API_KEY
 ```
 
-Add those `export` lines to `~/.zshrc`, `~/.bashrc`, or another private shell startup file if you want them available in every terminal. Open a new terminal after setting persistent environment variables.
+To migrate an existing `.env` in one step:
 
-For file-based local setup, copy `.env.example` to `.env` and fill values. `.env` is ignored by Git. The CLIs load `.env` from this repo, from the current directory tree, or from `%USERPROFILE%\.config\agent-clis\.env` on Windows or `~/.config/agent-clis/.env` on macOS/Linux; real environment variables win over `.env` values.
+```sh
+secretsx import            # copy every recognized secret from .env into the store
+secretsx import --purge    # ...and then strip the secret values out of .env
+```
+
+### Resolution order
+
+`require_env()` resolves a secret as: (1) an explicit environment variable, then
+(2) the credential store. Secrets no longer fall back to `.env`. So a one-off override
+still works — e.g. `EXA_API_KEY=... searchx search "…"` — without changing the store.
+
+### Non-secret config
+
+Copy `.env.example` to `.env` for **non-secret** config only (`REDDIT_USER_AGENT`,
+`ATLASSIAN_BASE_URL`, `ATLASSIAN_EMAIL`, and `GOOGLE_APPLICATION_CREDENTIALS`, which is a
+file path). `.env` is ignored by Git. The CLIs load `.env` from this repo, from the
+current directory tree, or from `%USERPROFILE%\.config\agent-clis\.env` on Windows or
+`~/.config/agent-clis/.env` on macOS/Linux. Do not put API keys or tokens in `.env`.
 
 ## Before Committing
 

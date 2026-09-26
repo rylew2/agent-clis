@@ -7,6 +7,7 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 | Command | Status | Replaces / reduces | Purpose |
 |---|---|---|---|
 | `ytx` | working | `youtube-transcript` MCP | Fetch YouTube transcripts and save wiki source notes. |
+| `twitterx` | working; public retrieval verified | No MCP; X/Twitter | Export conversation text/JSON and images/videos with an isolated gallery-dl backend. See [docs/TWITTERX.md](docs/TWITTERX.md). |
 | `searchx` | working, requires `EXA_API_KEY` | `exa` MCP | Compact Exa web search/fetch wrapper. |
 | `docsx` | working, search requires `EXA_API_KEY` | Docs-search workflows; Exa-backed | Generic documentation search/read wrapper. |
 | `refx` | working, requires `REF_API_KEY` and Ref credits | `ref` MCP | Ref-backed documentation lookup via Ref's MCP HTTP endpoint. |

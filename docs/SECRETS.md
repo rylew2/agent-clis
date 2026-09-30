@@ -39,6 +39,14 @@ export REF_API_KEY="your-key"
 
 Add those `export` lines to `~/.zshrc`, `~/.bashrc`, or another private shell startup file if you want them available in every terminal. Open a new terminal after setting persistent environment variables.
 
+On macOS, prefer the login Keychain so secrets never land in files or shell history. `require_env` falls back to Keychain items with service `agent-clis` and the variable name as the account. The trailing `-w` prompts for the value with hidden input:
+
+```sh
+security add-generic-password -U -s agent-clis -a EXA_API_KEY -w
+```
+
+Lookup order: real environment variables, then `.env`, then Keychain.
+
 For file-based local setup, copy `.env.example` to `.env` and fill values. `.env` is ignored by Git. The CLIs load `.env` from this repo, from the current directory tree, or from `%USERPROFILE%\.config\agent-clis\.env` on Windows or `~/.config/agent-clis/.env` on macOS/Linux; real environment variables win over `.env` values.
 
 ## Before Committing

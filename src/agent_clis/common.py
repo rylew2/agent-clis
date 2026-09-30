@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -17,6 +18,7 @@ import requests
 
 DEFAULT_TIMEOUT = 30
 _DOTENV_LOADED = False
+KEYCHAIN_SERVICE = "agent-clis"
 
 for stream in (sys.stdout, sys.stderr):
     if hasattr(stream, "reconfigure"):
@@ -68,9 +70,26 @@ def _load_dotenv_once() -> None:
                 os.environ[key] = value
 
 
+def _keychain_secret(name: str) -> str | None:
+    if sys.platform != "darwin":
+        return None
+    try:
+        result = subprocess.run(
+            ["security", "find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", name, "-w"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip() or None
+
+
 def require_env(name: str, help_text: str | None = None) -> str:
     _load_dotenv_once()
-    value = os.getenv(name)
+    value = os.getenv(name) or _keychain_secret(name)
     if value:
         return value
     extra = f" {help_text}" if help_text else ""

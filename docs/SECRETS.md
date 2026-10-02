@@ -14,9 +14,9 @@ Future tools may need credentials:
 | `docsx search` | `EXA_API_KEY` |
 | `refx` | `REF_API_KEY` and available Ref credits |
 | `figmax` | `FIGMA_TOKEN` (Figma personal access token) |
+| `slackx` | `SLACK_TOKEN`, `SLACK_USER_TOKEN`, or `SLACK_BOT_TOKEN` |
 | future `redditx` OAuth mode | Reddit OAuth client ID/secret |
 | `googlex` | Google OAuth/application credentials |
-| `slackx` | Slack bot token |
 | `atlassianx` | Atlassian API token |
 
 ## Setup Pattern
@@ -35,7 +35,19 @@ macOS/Linux:
 ```sh
 export EXA_API_KEY="your-key"
 export REF_API_KEY="your-key"
+export SLACK_USER_TOKEN="xoxp-your-token"
 ```
+
+Create a Slack app at <https://api.slack.com/apps?new_app=1> and add **User Token Scopes** (search requires a user `xoxp-` token). Pick the scopes that match what you need to read:
+
+| Command | Scopes |
+| --- | --- |
+| `message`, `thread`, `history` | `channels:history`, `groups:history`, `im:history`, and/or `mpim:history` |
+| `channels`, `history #name` | `channels:read`, `groups:read`, `im:read`, and/or `mpim:read` |
+| `search` | `search:read` |
+| `--resolve-users` | `users:read` |
+
+Add `files:read` if file metadata matters. Do not add write scopes such as `chat:write`; `slackx` is read-only.
 
 Add those `export` lines to `~/.zshrc`, `~/.bashrc`, or another private shell startup file if you want them available in every terminal. Open a new terminal after setting persistent environment variables.
 

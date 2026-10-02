@@ -92,12 +92,16 @@ def summarize_record(record: dict[str, Any]) -> dict[str, Any]:
     return summary
 
 
-def print_records(records: list[dict[str, Any]], full: bool) -> None:
-    if full:
-        print_json(records)
+def print_records(records: list[dict[str, Any]], full: bool, fmt: str) -> None:
+    rows = records if full else [summarize_record(record) for record in records]
+    # One array, not concatenated objects, so the output is pipeable to jq.
+    # --full keeps JSON regardless: raw records are nested and unreadable flat.
+    if fmt == "json" or full:
+        print_json(rows)
         return
-    for record in records:
-        print_json(summarize_record(record))
+    for row in rows:
+        fields = ", ".join(f"{key}={value}" for key, value in row.items() if key != "day")
+        print(f"- {row.get('day', '?')}: {fields}" if fields else f"- {row.get('day', '?')}")
 
 
 def cmd_status(_: argparse.Namespace) -> int:
@@ -118,19 +122,19 @@ def range_args(args: argparse.Namespace) -> tuple[str, str]:
 
 def cmd_daily(args: argparse.Namespace) -> int:
     start, end = range_args(args)
-    print_records(read_rows("daily_records", start, end, args.limit), args.full)
+    print_records(read_rows("daily_records", start, end, args.limit), args.full, args.format)
     return 0
 
 
 def cmd_sleep(args: argparse.Namespace) -> int:
     start, end = range_args(args)
-    print_records(read_rows("sleep_records", start, end, args.limit), args.full)
+    print_records(read_rows("sleep_records", start, end, args.limit), args.full, args.format)
     return 0
 
 
 def cmd_activities(args: argparse.Namespace) -> int:
     start, end = range_args(args)
-    print_records(read_rows("activities", start, end, args.limit), args.full)
+    print_records(read_rows("activities", start, end, args.limit), args.full, args.format)
     return 0
 
 
@@ -140,6 +144,7 @@ def add_range_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--end", help="YYYYMMDD end day")
     parser.add_argument("--limit", type=int, default=30)
     parser.add_argument("--full", action="store_true")
+    parser.add_argument("--format", choices=["markdown", "json"], default="markdown")
 
 
 def build_parser() -> argparse.ArgumentParser:

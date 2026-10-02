@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 from urllib.parse import urljoin
 
-from .common import AgentCliError, LinkExtractor, main_wrapper, request_text
+from .common import AgentCliError, LinkExtractor, main_wrapper, print_json, request_text
 
 
 def cmd_screenshot(args: argparse.Namespace) -> int:
@@ -46,16 +46,20 @@ def cmd_links(args: argparse.Namespace) -> int:
     parser = LinkExtractor(args.url)
     parser.feed(html)
     seen: set[str] = set()
-    count = 0
+    links: list[dict[str, str]] = []
     for href, text in parser.links:
         absolute = urljoin(args.url, href)
         if absolute in seen:
             continue
         seen.add(absolute)
-        print(f"- {text or absolute}: {absolute}")
-        count += 1
-        if count >= args.limit:
+        links.append({"url": absolute, "text": text})
+        if len(links) >= args.limit:
             break
+    if args.format == "json":
+        print_json(links)
+        return 0
+    for link in links:
+        print(f"- {link['text'] or link['url']}: {link['url']}")
     return 0
 
 
@@ -75,6 +79,7 @@ def build_parser() -> argparse.ArgumentParser:
     links = sub.add_parser("links")
     links.add_argument("url")
     links.add_argument("--limit", type=int, default=100)
+    links.add_argument("--format", choices=["markdown", "json"], default="markdown")
     links.set_defaults(func=cmd_links)
     console = sub.add_parser("console")
     console.add_argument("url")

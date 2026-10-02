@@ -14,9 +14,9 @@ Future tools may need credentials:
 | `docsx search` | `EXA_API_KEY` |
 | `refx` | `REF_API_KEY` and available Ref credits |
 | `figmax` | `FIGMA_TOKEN` (Figma personal access token) |
+| `slackx` | `SLACK_TOKEN`, `SLACK_USER_TOKEN`, or `SLACK_BOT_TOKEN` |
 | future `redditx` OAuth mode | Reddit OAuth client ID/secret |
 | `googlex` | Google OAuth/application credentials |
-| `slackx` | Slack bot token |
 | `atlassianx` | Atlassian API token |
 
 ## Setup Pattern
@@ -35,7 +35,10 @@ macOS/Linux:
 ```sh
 export EXA_API_KEY="your-key"
 export REF_API_KEY="your-key"
+export SLACK_USER_TOKEN="xoxp-your-token"
 ```
+
+Create a Slack app at <https://api.slack.com/apps?new_app=1>. For read-only message/thread lookup, install it with whichever history scopes match what you need to read: `channels:history`, `groups:history`, `im:history`, and/or `mpim:history`. Add `users:read` for `slackx --resolve-users`; add `files:read` if file metadata matters.
 
 Add those `export` lines to `~/.zshrc`, `~/.bashrc`, or another private shell startup file if you want them available in every terminal. Open a new terminal after setting persistent environment variables.
 

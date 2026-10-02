@@ -4,7 +4,7 @@ No API keys or tokens should be committed to this repo.
 
 ## Current State
 
-`ytx`, `semgrepx`, `redditx`, `corosx`, and `browserx links` do not require API keys. `redditx` reads public old.reddit.com pages (set `REDDIT_USER_AGENT` to override the request User-Agent); no OAuth credentials are used. `browserx screenshot` requires local Playwright tooling, not an API key.
+`ytx`, `semgrepx`, `redditx`, `corosx`, and `browserx links` do not require API keys. `redditx` reads public old.reddit.com pages, falling back to www.reddit.com RSS feeds when blocked (set `REDDIT_USER_AGENT` to override the request User-Agent); no OAuth credentials are used. `browserx screenshot` requires local Playwright tooling, not an API key.
 
 Future tools may need credentials:
 

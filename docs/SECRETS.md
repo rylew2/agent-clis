@@ -38,7 +38,16 @@ export REF_API_KEY="your-key"
 export SLACK_USER_TOKEN="xoxp-your-token"
 ```
 
-Create a Slack app at <https://api.slack.com/apps?new_app=1>. For read-only message/thread lookup, install it with whichever history scopes match what you need to read: `channels:history`, `groups:history`, `im:history`, and/or `mpim:history`. Add `users:read` for `slackx --resolve-users`; add `files:read` if file metadata matters.
+Create a Slack app at <https://api.slack.com/apps?new_app=1> and add **User Token Scopes** (search requires a user `xoxp-` token). Pick the scopes that match what you need to read:
+
+| Command | Scopes |
+| --- | --- |
+| `message`, `thread`, `history` | `channels:history`, `groups:history`, `im:history`, and/or `mpim:history` |
+| `channels`, `history #name` | `channels:read`, `groups:read`, `im:read`, and/or `mpim:read` |
+| `search` | `search:read` |
+| `--resolve-users` | `users:read` |
+
+Add `files:read` if file metadata matters. Do not add write scopes such as `chat:write`; `slackx` is read-only.
 
 Add those `export` lines to `~/.zshrc`, `~/.bashrc`, or another private shell startup file if you want them available in every terminal. Open a new terminal after setting persistent environment variables.
 

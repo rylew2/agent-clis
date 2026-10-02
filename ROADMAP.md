@@ -161,7 +161,7 @@ Requirements:
 ## Later
 
 - `googlex`: read-only Gmail/calendar summaries, with careful OAuth and PII handling.
-- `slackx`: working v1 for read-only permalink message/thread fetches. Future: channel/search summaries. Writes require dry-run and confirmation.
+- `slackx`: working read-only permalink message/thread, channel history, search, and channel-list reads. Writes require dry-run and confirmation.
 - `atlassianx`: Jira/Confluence reads; writes require explicit audit logging.
 
 ## Packaging

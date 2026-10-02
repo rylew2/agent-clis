@@ -14,7 +14,7 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 | `semgrepx` | working, requires Semgrep CLI | `semgrep` MCP | Semgrep wrapper that returns concise findings. |
 | `redditx` | working, reads public old.reddit pages (no API key; rate-limited) | `reddit` MCP | Reddit search/thread reader with cached raw data. |
 | `figmax` | working, requires `FIGMA_TOKEN` | `figma` MCP for read-only inspection | Figma file/node summaries, comment reads, and node image exports. |
-| `slackx` | working, requires Slack token | Slack MCP for read-only lookup | Fetch Slack messages and threads from permalinks. |
+| `slackx` | working, requires Slack token | Slack MCP for read-only lookup | Read Slack messages/threads from permalinks, channel history, message search, and channel lists. |
 | `corosx` | working, requires local COROS cache | `coros` MCP for read-only reports | COROS cache/reporting CLI. |
 | `browserx` | partial | `playwright` / browser MCP for deterministic checks only | Link extraction and Playwright screenshots. |
 | `tokensx` | working | No MCP replacement; measurement helper | Approximate token counts for saved outputs. |
@@ -114,7 +114,7 @@ These CLIs are intended to replace default-loaded MCPs for read-heavy workflows:
 | `semgrepx` | `semgrep` | Native Semgrep scan output, capped and summarized. |
 | `redditx` | `reddit` | Public Reddit search/thread reads. |
 | `figmax` | `figma` | Read-only file/node inspection, comments, and image exports. |
-| `slackx` | Slack MCP | Read-only message and thread reads from permalinks. |
+| `slackx` | Slack MCP | Read-only permalink, channel history, search, and channel-list reads. |
 
 Keep browser/Playwright and COROS MCPs optional rather than fully removed if you need exploratory browser control, live UI inspection, COROS auth/sync, workout creation, scheduling, or other write/live API workflows.
 

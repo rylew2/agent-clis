@@ -12,7 +12,7 @@ Personal command-line tools for agent workflows. The goal is to replace narrow, 
 | `docsx` | working, search requires `EXA_API_KEY` | Docs-search workflows; Exa-backed | Generic documentation search/read wrapper. |
 | `refx` | working, requires `REF_API_KEY` and Ref credits | `ref` MCP | Ref-backed documentation lookup via Ref's MCP HTTP endpoint. |
 | `semgrepx` | working, requires Semgrep CLI | `semgrep` MCP | Semgrep wrapper that returns concise findings. |
-| `redditx` | working, reads public old.reddit pages (no API key; rate-limited) | `reddit` MCP | Reddit search/thread reader with cached raw data. |
+| `redditx` | working, reads public old.reddit pages with RSS fallback (no API key; rate-limited) | `reddit` MCP | Reddit search/thread reader with cached raw data. |
 | `figmax` | working, requires `FIGMA_TOKEN` | `figma` MCP for read-only inspection | Figma file/node summaries, comment reads, and node image exports. |
 | `slackx` | working, requires Slack token | Slack MCP for read-only lookup | Read Slack messages/threads from permalinks, channel history, message search, and channel lists. |
 | `corosx` | working, requires local COROS cache | `coros` MCP for read-only reports | COROS cache/reporting CLI. |
@@ -128,7 +128,7 @@ The installers use `pipx` if available, otherwise `pip --user -e .`. Open a new 
 
 ## Secrets
 
-No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `redditx` reads public old.reddit.com pages and is rate-limited per IP, so space repeated calls a few seconds apart. `searchx` and `docsx search` read `EXA_API_KEY`; `refx` reads `REF_API_KEY`; `figmax` reads `FIGMA_TOKEN`; `slackx` reads `SLACK_TOKEN`, `SLACK_USER_TOKEN`, or `SLACK_BOT_TOKEN`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
+No secrets are required for `ytx`, `semgrepx`, `redditx`, or most `browserx` commands. `redditx` reads public old.reddit.com pages, falling back to www.reddit.com RSS feeds (no scores or comment counts) when Reddit blocks that pathway, and is rate-limited per IP, so space repeated calls a few seconds apart. `searchx` and `docsx search` read `EXA_API_KEY`; `refx` reads `REF_API_KEY`; `figmax` reads `FIGMA_TOKEN`; `slackx` reads `SLACK_TOKEN`, `SLACK_USER_TOKEN`, or `SLACK_BOT_TOKEN`; see [docs/SECRETS.md](docs/SECRETS.md). `.env` is ignored, and `.env.example` contains only placeholders.
 
 ## Agent Config Guidance
 

@@ -1,7 +1,10 @@
 """Read-only Reddit research CLI.
 
 Reads public old.reddit.com pages and parses the long-stable markup.
-Access is rate-limited per IP: space repeated calls a few seconds apart.
+When Reddit blocks that pathway (login wall, 403, persistent 429), falls
+back to the www.reddit.com RSS/Atom feeds, which carry no score or
+comment-count data. Access is rate-limited per IP: space repeated calls
+a few seconds apart.
 """
 
 from __future__ import annotations
@@ -9,44 +12,65 @@ from __future__ import annotations
 import argparse
 import os
 import time
+import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
 
 import requests
 
-from .common import AgentCliError, cache_json, clean_ws, main_wrapper, print_json, truncate
+from .common import AgentCliError, cache_json, clean_ws, html_to_text, main_wrapper, print_json, truncate
 
 OLD_REDDIT = "https://old.reddit.com"
+WWW_REDDIT = "https://www.reddit.com"
+ATOM_NS = "{http://www.w3.org/2005/Atom}"
 BROWSER_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 )
 RETRY_DELAYS = [5, 10]
+RSS_RETRY_DELAYS = [10, 25, 45]
+
+
+class RedditBlockedError(Exception):
+    """Reddit refused the HTML pathway (login wall, 403, or persistent 429)."""
 
 
 def headers() -> dict[str, str]:
     return {"User-Agent": os.getenv("REDDIT_USER_AGENT", BROWSER_UA)}
 
 
-def fetch_html(url: str, params: dict | None = None) -> str:
-    for attempt, delay in enumerate([0, *RETRY_DELAYS]):
+def get_with_retries(url: str, params: dict | None = None, retry_delays: list[int] = RETRY_DELAYS) -> requests.Response:
+    response = None
+    for attempt, delay in enumerate([0, *retry_delays]):
         if delay:
             time.sleep(delay)
         response = requests.get(url, headers=headers(), params=params, timeout=30)
-        if response.status_code == 429 and attempt < len(RETRY_DELAYS):
+        if response.status_code == 429 and attempt < len(retry_delays):
             continue
-        if response.status_code == 429:
-            raise AgentCliError(
-                f"GET {url} rate-limited (HTTP 429) after retries. "
-                "Unauthenticated Reddit access is throttled per IP; wait ~30s and retry."
-            )
-        if response.status_code >= 400:
-            raise AgentCliError(
-                f"GET {url} failed: HTTP {response.status_code}. "
-                "Reddit may be blocking this network; retry later or set REDDIT_USER_AGENT."
-            )
-        return response.text
-    raise AgentCliError(f"GET {url} failed.")
+        break
+    return response
+
+
+def fetch_html(url: str, params: dict | None = None) -> str:
+    response = get_with_retries(url, params)
+    if response.status_code >= 400:
+        raise RedditBlockedError(f"HTTP {response.status_code}")
+    if "/login" in urlsplit(response.url).path:
+        raise RedditBlockedError("login wall")
+    return response.text
+
+
+def fetch_rss(url: str, params: dict | None = None) -> str:
+    response = get_with_retries(url, params, retry_delays=RSS_RETRY_DELAYS)
+    if response.status_code == 404:
+        raise AgentCliError(f"GET {url} failed: HTTP 404. Check the subreddit or thread URL.")
+    if response.status_code >= 400:
+        raise AgentCliError(
+            f"GET {url} failed: HTTP {response.status_code}. "
+            "Reddit is blocking both the HTML and RSS pathways from this network; "
+            "wait a minute and retry, or set REDDIT_USER_AGENT."
+        )
+    return response.text
 
 
 def old_reddit_url(url: str) -> str:
@@ -58,6 +82,69 @@ def old_reddit_url(url: str) -> str:
     if not path.startswith("/"):
         path = "/" + path
     return OLD_REDDIT + path
+
+
+def parse_rss_entries(xml_text: str) -> list[dict[str, str]]:
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError as exc:
+        raise AgentCliError(f"Could not parse Reddit RSS feed: {exc}")
+
+    def text_of(entry: ET.Element, tag: str) -> str:
+        node = entry.find(f"{ATOM_NS}{tag}")
+        return node.text or "" if node is not None else ""
+
+    entries = []
+    for entry in root.findall(f"{ATOM_NS}entry"):
+        link = entry.find(f"{ATOM_NS}link")
+        category = entry.find(f"{ATOM_NS}category")
+        author = entry.find(f"{ATOM_NS}author/{ATOM_NS}name")
+        entries.append(
+            {
+                "id": text_of(entry, "id"),
+                "title": clean_ws(text_of(entry, "title")),
+                "url": (link.get("href") or "") if link is not None else "",
+                "subreddit": (category.get("term") or "") if category is not None else "",
+                "author": (author.text or "").removeprefix("/u/") if author is not None else "",
+                "text": clean_ws(html_to_text(text_of(entry, "content"))),
+            }
+        )
+    return entries
+
+
+def rss_search(args: argparse.Namespace) -> list[dict[str, str]]:
+    if args.subreddit:
+        url = f"{WWW_REDDIT}/r/{args.subreddit}/search.rss"
+        params = {"q": args.query, "restrict_sr": "on", "sort": args.sort, "limit": args.limit}
+    else:
+        url = f"{WWW_REDDIT}/search.rss"
+        params = {"q": args.query, "sort": args.sort, "limit": args.limit}
+    posts = [e for e in parse_rss_entries(fetch_rss(url, params)) if e["id"].startswith("t3_")]
+    return [
+        {
+            "title": e["title"],
+            "url": e["url"],
+            "subreddit": f"r/{e['subreddit']}" if e["subreddit"] else "",
+            "score": "",
+            "comments": "",
+            "preview": e["text"],
+        }
+        for e in posts
+    ]
+
+
+def rss_thread(www_url: str, args: argparse.Namespace) -> dict:
+    entries = parse_rss_entries(fetch_rss(f"{www_url}.rss", {"limit": max(args.top, 20)}))
+    post = {"title": "", "subreddit": "", "score": "", "selftext": ""}
+    comments = []
+    for e in entries:
+        if e["id"].startswith("t3_"):
+            post = {"title": e["title"], "subreddit": e["subreddit"], "score": "", "selftext": e["text"]}
+        elif e["id"].startswith("t1_"):
+            comments.append(
+                {"kind": "comment", "author": e["author"], "permalink": e["url"], "score": "", "body": e["text"]}
+            )
+    return {"post": post, "comments": comments}
 
 
 class SearchResultParser(HTMLParser):
@@ -216,18 +303,28 @@ def cmd_search(args: argparse.Namespace) -> int:
     else:
         url = f"{OLD_REDDIT}/search"
         params = {"q": args.query, "sort": args.sort, "limit": args.limit}
-    html = fetch_html(url, params)
-    parser = SearchResultParser()
-    parser.feed(html)
-    results = parser.results[: args.limit]
+    mode = "html"
+    try:
+        html = fetch_html(url, params)
+        parser = SearchResultParser()
+        parser.feed(html)
+        results = parser.results[: args.limit]
+    except RedditBlockedError:
+        results = []
+    if not results:
+        mode = "rss"
+        results = rss_search(args)[: args.limit]
     for item in results:
-        item["url"] = item["url"].replace("https://old.reddit.com", "https://www.reddit.com")
+        item["url"] = item["url"].replace(OLD_REDDIT, WWW_REDDIT)
     cache_path = cache_json("redditx", args.query, results)
     if args.format == "json":
         print_json(results)
         return 0
     if not results:
-        print("No post results. (Reddit may have served a challenge page; retry in ~30s.)")
+        print("No post results from the HTML or RSS pathways (empty query, or Reddit is blocking this network).")
+    elif mode == "rss":
+        print("[rss fallback: Reddit blocked the old.reddit.com pathway; scores/comment counts unavailable]")
+        print()
     for idx, item in enumerate(results, start=1):
         print(f"## {idx}. {item['title']}")
         print(f"URL: {item['url']}")
@@ -243,19 +340,31 @@ def cmd_search(args: argparse.Namespace) -> int:
 
 def cmd_thread(args: argparse.Namespace) -> int:
     url = old_reddit_url(args.url)
-    html = fetch_html(url, {"limit": max(args.top, 20)})
-    parser = ThreadParser()
-    parser.feed(html)
-    data = {"post": {k: clean_ws(v) for k, v in parser.post.items()}, "comments": parser.comments}
+    mode = "html"
+    try:
+        html = fetch_html(url, {"limit": max(args.top, 20)})
+        parser = ThreadParser()
+        parser.feed(html)
+        data = {"post": {k: clean_ws(v) for k, v in parser.post.items()}, "comments": parser.comments}
+    except RedditBlockedError:
+        data = {"post": {"title": ""}, "comments": []}
+    if not data["post"]["title"]:
+        mode = "rss"
+        data = rss_thread(url.replace(OLD_REDDIT, WWW_REDDIT), args)
     cache_path = cache_json("redditx", url, data)
     if args.format == "json":
         print_json(data)
         return 0
     post = data["post"]
     if not post["title"]:
-        raise AgentCliError("Could not parse thread page (Reddit may have served a challenge page; retry in ~30s).")
+        raise AgentCliError(
+            "Could not fetch thread from the HTML or RSS pathways (bad URL, or Reddit is blocking this network)."
+        )
+    if mode == "rss":
+        print("[rss fallback: Reddit blocked the old.reddit.com pathway; scores unavailable]")
+        print()
     print(f"# {post['title']}")
-    print(f"URL: {url.replace('https://old.reddit.com', 'https://www.reddit.com')}")
+    print(f"URL: {url.replace(OLD_REDDIT, WWW_REDDIT)}")
     print(f"r/{post['subreddit']} | score: {post['score'] or '?'}")
     body = truncate(post["selftext"], args.max_chars)
     if body:

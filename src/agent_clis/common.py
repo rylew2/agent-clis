@@ -169,6 +169,8 @@ def request_text(url: str, *, headers: dict[str, str] | None = None, timeout: in
     response = requests.get(url, headers=headers, timeout=timeout)
     if response.status_code >= 400:
         raise http_error("GET", url, response)
+    if response.encoding in {None, "ISO-8859-1"} and response.apparent_encoding:
+        response.encoding = response.apparent_encoding
     return response.text
 
 
